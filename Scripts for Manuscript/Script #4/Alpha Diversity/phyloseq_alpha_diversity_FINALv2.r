@@ -125,7 +125,7 @@ plot_richness(ibd_rare, measures = c("Shannon","Chao1"))
 #
 # Calculate diversity indices
 diversity_data <- estimate_richness(ibd_rare, measures = c("Shannon", "Chao1"))
-diversity_data$inflammation_with_surgery[is.na(diversity_data$inflammation_with_surgery)] <- 'Healthy Control'
+
 
 # Inflammation with Surgery Alpha Diversity
 diversity_data$inflammation_with_surgery <- sample_data(ibd_rare)$inflammation_with_surgery
@@ -176,8 +176,6 @@ p_iws
 #
 #
 # Disease Severity Alpha diversity
-
-diversity_data$disease_severity[is.na(diversity_data$disease_severity)] <- 'Healthy Control'
 
 diversity_data$disease_severity <- factor(sample_data(ibd_rare)$disease_severity, 
                                           levels = c("Healthy Control", "Low", "Medium", "High"), ordered = TRUE)
@@ -263,7 +261,13 @@ compare_means_chao1 <- compare_means(Value ~ DiseaseSev_with_inflammation,  data
 compare_means_shannon <- compare_means(Value ~ DiseaseSev_with_inflammation,  data = data_Shannon_ds_inf_false)
 compare_means_chao1 <- compare_means(Value ~ DiseaseSev_with_inflammation,  data = data_Chao1_ds_inf_false)
 
-#true inflammation for Shannon and Chao were ns so no need to create comparisons list  
+#true inflammation for Shannon and Chao were ns so 
+significant_comparisons_chao1_ds_inf_true <-list(c("Medium with inflammation","Healthy Control"),
+                                                 c("Medium with inflammation","Low with inflammation"))
+
+significant_comparisons_shannon_ds_inf_true <-list(c("Medium with inflammation","Healthy Control"),
+                                                   c("Medium with inflammation","Low with inflammation"))
+
 significant_comparisons_chao1_ds_inf_false <-list(c("Medium no inflammation","Healthy Control"),
                                                   c("Medium no inflammation","Low no inflammation"))
 
@@ -278,15 +282,15 @@ p_Shannon_ds_inf_true <- ggplot(data_Shannon_ds_inf_true, aes(x = DiseaseSev_wit
   scale_fill_manual(values = c("Shannon" = "#AED6F1")) +
   labs(x = "Disease Severity and Inflammation", y = "Diversity Index") +
   facet_wrap(~Measure, scales = "free_y", ncol = 2) +
-  coord_cartesian(ylim = c(0, 5)) 
+  coord_cartesian(ylim = c(0, 5)) + stat_compare_means(method = "wilcox.test", comparisons = significant_comparisons_shannon_ds_inf_true, label = "p.signif")
 # ns but can remove commment + stat_compare_means(method = "wilcox.test", comparisons = significant_comparisons_shannon_ds_inf_true, label = "p.signif")
 
-p_Chao1_ds_inf_true <- ggplot(data_Chao1, aes(x = DiseaseSev_with_inflammation, y = Value, fill = Measure)) +
+p_Chao1_ds_inf_true <- ggplot(data_Chao1_ds_inf_true, aes(x = DiseaseSev_with_inflammation, y = Value, fill = Measure)) +
   geom_boxplot() +
   scale_fill_manual(values = c("Chao1" = "#F9E79F")) +
   labs(x = "", y = "Diversity Index") +
   facet_wrap(~Measure, scales = "free_y", ncol = 2) +
-  coord_cartesian(ylim = c(0, 500))
+  coord_cartesian(ylim = c(0, 500)) + stat_compare_means(method = "wilcox.test", comparisons = significant_comparisons_chao1_ds_inf_true, label = "p.signif")
 
 p_dsinf_true <-  p_Chao1_ds_inf_true | p_Shannon_ds_inf_true
 
@@ -297,7 +301,7 @@ p_shannon_dsinf_false <- ggplot(data_Shannon_ds_inf_false, aes(x = DiseaseSev_wi
   geom_boxplot() +
   scale_fill_manual(values = c("Shannon" = "#56B4E9")) +
   labs(x = "Disease Severity and Inflammation",
-       y = "Diversity Index") +
+       y = "") +
   facet_wrap(~Measure, scales = "free_y", ncol = 4) + stat_compare_means(method = "wilcox.test", comparisons = significant_comparisons_shannon_ds_inf_false, label = "p.signif")
 
 p_chao1_dsinf_false <- ggplot(data_Chao1_ds_inf_false, aes(x = DiseaseSev_with_inflammation, y = Value, fill = Measure)) +
@@ -310,6 +314,5 @@ p_chao1_dsinf_false <- ggplot(data_Chao1_ds_inf_false, aes(x = DiseaseSev_with_i
 p_dsinf_false <-  p_chao1_dsinf_false | p_shannon_dsinf_false
 
 
-p_dsinf_true
+p_dsinf_true 
 p_dsinf_false
-
