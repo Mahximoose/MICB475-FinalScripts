@@ -169,6 +169,7 @@ p_Chao1_iws <- ggplot(chao1_data_iws, aes(x = inflammation_with_surgery, y = Val
 
 p_iws <-  p_Chao1_iws | p_Shannon_iws
 p_iws
+ggsave("inflam_w_surg.png", p_iws)
 
 #
 
@@ -222,6 +223,7 @@ p_Chao1_ds <- ggplot(chao1_data_ds, aes(x = disease_severity, y = Value, fill = 
 
 p_ds <-  p_Chao1_ds | p_Shannon_ds
 p_ds
+ggsave("dseverity.png", p_ds)
 
 #
 #
@@ -315,4 +317,6 @@ p_dsinf_false <-  p_chao1_dsinf_false | p_shannon_dsinf_false
 
 
 p_dsinf_true 
+ggsave("dsinf_true.png", p_dsinf_true)
 p_dsinf_false
+ggsave("dsinf_false.png", p_dsinf_false)
